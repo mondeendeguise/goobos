@@ -14,6 +14,21 @@ void stack_overflow(void)
 
 void kernel_main(void)
 {
+    vga_init();
+    vga_write_byte('H');
+    vga_write_byte('e');
+    vga_write_byte('l');
+    vga_write_byte('l');
+    vga_write_byte('o');
+    vga_write_byte(',');
+    vga_write_byte(' ');
+    vga_write_byte('W');
+    vga_write_byte('o');
+    vga_write_byte('r');
+    vga_write_byte('l');
+    vga_write_byte('d');
+    vga_write_byte('!');
+
     for(int i = 0; i < 1024; ++i)
     {
         page_directory[i] = 0x00000002;

@@ -9,6 +9,10 @@
 
 #define VGA_BUFFER_OFFSET 0xB8000
 
+void vga_init(void);
+
+void vga_write_byte(u8 c);
+
 enum VGA_Color
 {
     VGA_COLOR_BLACK = 0,
@@ -32,22 +36,5 @@ enum VGA_Color
 typedef u8 VGA_Color_Code;
 
 VGA_Color_Code vga_color_code(enum VGA_Color fg, enum VGA_Color bg);
-
-struct VGA_Screen_Char
-{
-    u8 character;
-    VGA_Color_Code color;
-};
-
-struct VGA_Buffer
-{
-    struct VGA_Screen_Char chars[VGA_BUFFER_HEIGHT * VGA_BUFFER_WIDTH];
-};
-
-struct VGA_Writer
-{
-    size_t cursor_pos;
-    VGA_Color_Code color;
-};
 
 #endif // VGA_H_

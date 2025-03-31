@@ -23,6 +23,7 @@ OBJS := $(ARCH_DIR)/multiboot.o \
 		$(ARCH_DIR)/gdt.o \
 		$(ARCH_DIR)/idt_32.o \
 		$(ARCH_DIR)/interrupts.o \
+		$(ARCH_DIR)/vga.o \
 		$(SRC_DIR)/kernel.o
 
 INCLUDES := -I./include -I$(ARCH_DIR)/include
