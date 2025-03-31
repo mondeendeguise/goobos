@@ -1,5 +1,6 @@
 #include <goobos/types.h>
 #include <goobos/stddef.h>
+#include <goobos/string.h>
 #include <vga.h>
 
 VGA_Color_Code vga_color_code(enum VGA_Color fg, enum VGA_Color bg)
@@ -44,4 +45,12 @@ void vga_write_byte(u8 c)
     }
 
     writer.buffer[writer.cursor_pos++] = (struct VGA_Screen_Char) { .character = c, .color = writer.color };
+}
+
+void vga_write_string(const char *s)
+{
+    for(size_t i = 0; i < strlen(s); ++i)
+    {
+        vga_write_byte(s[i]);
+    }
 }

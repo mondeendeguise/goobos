@@ -12,6 +12,7 @@
 void vga_init(void);
 
 void vga_write_byte(u8 c);
+void vga_write_string(const char *s);
 
 enum VGA_Color
 {
