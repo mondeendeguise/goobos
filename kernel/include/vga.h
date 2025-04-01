@@ -8,11 +8,19 @@
 #define VGA_BUFFER_WIDTH 80
 
 #define VGA_BUFFER_OFFSET 0xB8000
+#define INVALID_CHARACTER_SYMBOL 0xFE
 
 void vga_init(void);
 
 void vga_write_byte(u8 c);
 void vga_write_string(const char *s);
+void vga_newline(void);
+void vga_clear_line(size_t line);
+void vga_scroll(size_t lines);
+
+// TODO: implement printf
+void vga_print(const char *s);
+void vga_println(const char *s);
 
 enum VGA_Color
 {

@@ -26,14 +26,42 @@ static struct VGA_Writer writer = {0};
 void vga_init(void)
 {
     writer.cursor_pos = 0;
-    writer.color = vga_color_code(VGA_COLOR_WHITE, VGA_COLOR_BLACK);
+    writer.color = vga_color_code(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK);
     writer.buffer = (struct VGA_Screen_Char *) VGA_BUFFER_OFFSET;
+}
+
+void vga_clear_line(size_t line)
+{
+    for(size_t i = 0; i < VGA_BUFFER_WIDTH; ++i)
+    {
+        writer.buffer[(line * VGA_BUFFER_WIDTH) + i] = (struct VGA_Screen_Char) {0};
+    }
+}
+
+void vga_scroll(size_t lines)
+{
+    for(size_t i = 0; i < lines; ++i)
+    {
+        for(size_t row = 1; row < VGA_BUFFER_HEIGHT; ++row)
+        {
+            for(size_t col = 0; col < VGA_BUFFER_WIDTH; ++col)
+            {
+                struct VGA_Screen_Char character = writer.buffer[(row * VGA_BUFFER_WIDTH) + col];
+                writer.buffer[((row - 1) * VGA_BUFFER_WIDTH) + col] = character;
+            }
+        }
+
+        vga_clear_line(VGA_BUFFER_HEIGHT - 1);
+    }
 }
 
 void vga_newline(void)
 {
-    size_t line = writer.cursor_pos / VGA_BUFFER_WIDTH + 1;
-    writer.cursor_pos = line * VGA_BUFFER_WIDTH;
+    vga_scroll(1);
+    writer.cursor_pos = 0;
+
+    /*size_t line = writer.cursor_pos / VGA_BUFFER_WIDTH + 1;*/
+    /*writer.cursor_pos = line * VGA_BUFFER_WIDTH;*/
 }
 
 void vga_write_byte(u8 c)
@@ -44,13 +72,34 @@ void vga_write_byte(u8 c)
         return;
     }
 
-    writer.buffer[writer.cursor_pos++] = (struct VGA_Screen_Char) { .character = c, .color = writer.color };
+    size_t row = VGA_BUFFER_HEIGHT - 1;
+
+    /*writer.buffer[writer.cursor_pos++] = (struct VGA_Screen_Char) { .character = c, .color = writer.color };*/
+    writer.buffer[(row * VGA_BUFFER_WIDTH) + writer.cursor_pos++] = (struct VGA_Screen_Char) { .character = c, .color = writer.color };
 }
 
+#define ASCII_PRINTABLE_LOWER_BOUND 0x20
+#define ASCII_PRINTABLE_UPPER_BOUND 0x7E
 void vga_write_string(const char *s)
 {
     for(size_t i = 0; i < strlen(s); ++i)
     {
-        vga_write_byte(s[i]);
+        if((s[i] >= ASCII_PRINTABLE_LOWER_BOUND && s[i] <= ASCII_PRINTABLE_UPPER_BOUND)
+            || s[i] == '\n')
+        {
+            vga_write_byte(s[i]);
+        }
+        else vga_write_byte(INVALID_CHARACTER_SYMBOL);
     }
+}
+
+void vga_print(const char *s)
+{
+    vga_write_string(s);
+}
+
+void vga_println(const char *s)
+{
+    vga_write_string(s);
+    vga_write_byte('\n');
 }

@@ -10,8 +10,12 @@ void kernel_main(void)
 {
     vga_init();
 
-    vga_write_string("Hello, world!\n");
-    vga_write_string("Newline\n");
+    vga_println("Hello, world!");
+    vga_println("Newline");
+
+    vga_scroll(5);
+
+    vga_println("Hey hey!");
 
     while(1);
 }
