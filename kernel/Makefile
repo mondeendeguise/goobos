@@ -16,18 +16,26 @@ SRC_DIR := src
 
 LD_SCRIPT := $(ARCH_DIR)/kernel.ld
 
-CFLAGS ?= -Wall -Wextra -pedantic -O2 -ggdb
+KERNEL_OBJS := $(ARCH_DIR)/multiboot.o \
+				$(ARCH_DIR)/boot.o \
+				$(ARCH_DIR)/gdt.o \
+				$(ARCH_DIR)/idt/idt.o \
+				$(ARCH_DIR)/idt/idt_32.o \
+				$(ARCH_DIR)/idt/interrupts.o \
+				$(ARCH_DIR)/idt/isr.o \
+				$(ARCH_DIR)/vga.o \
+				goobos/string.o \
+				$(SRC_DIR)/kernel.o
 
-OBJS := $(ARCH_DIR)/multiboot.o \
-		$(ARCH_DIR)/boot.o \
-		$(ARCH_DIR)/gdt.o \
-		$(ARCH_DIR)/idt_32.o \
-		$(ARCH_DIR)/interrupts.o \
-		$(ARCH_DIR)/vga.o \
-		goobos/string.o \
-		$(SRC_DIR)/kernel.o
+OBJS := $(ARCH_DIR)/crti.o \
+		$(ARCH_DIR)/crtbegin.o \
+		$(KERNEL_OBJS) \
+		$(ARCH_DIR)/crtend.o \
+		$(ARCH_DIR)/crtn.o
 
 INCLUDES := -I./include -I$(ARCH_DIR)/include
+
+CFLAGS ?= -Wall -Wextra -pedantic -O2 -ggdb
 
 CFLAGS += -nostdlib -nostdinc -fno-common -fno-builtin -ffreestanding $(INCLUDES)
 
@@ -36,13 +44,25 @@ CFLAGS += -nostdlib -nostdinc -fno-common -fno-builtin -ffreestanding $(INCLUDES
 all: $(KERNEL)
 
 $(KERNEL): $(OBJS) $(LD_SCRIPT)
-	$(CC) -T $(LD_SCRIPT) -o $@ -ffreestanding -nostdlib $(OBJS)
+	$(LD) -T $(LD_SCRIPT) -o $@ -nostdlib $(OBJS)
 	grub-file --is-x86-multiboot2 $@
+
+# $(ARCH_DIR)/idt/handlers/%.o: $(ARCH_DIR)/idt/handlers/%.c
+# 	$(CC) $(CFLAGS) -mgeneral-regs-only -MD -c $< -o $@
 
 $(ARCH_DIR)/%.o: $(ARCH_DIR)/%.asm
 	$(FASM) $< $@
 
+$(ARCH_DIR)/%.o: $(ARCH_DIR)/%.c
+	$(CC) $(CFLAGS) -MD -c $< -o $@
+
+$(ARCH_DIR)/crtbegin.o $(ARCH_DIR)/crtend.o:
+	OBJ=`$(CC) $(CFLAGS) -print-file-name=$(@F)` && cp "$$OBJ" $@
+
 $(SRC_DIR)/%.o: $(SRC_DIR)/%.c
+	$(CC) $(CFLAGS) -MD -c $< -o $@
+
+goobos/%.o: goobos/%.c
 	$(CC) $(CFLAGS) -MD -c $< -o $@
 
 clean:
