@@ -16,9 +16,10 @@ void vga_write_byte(u8 c);
 void vga_write_string(const char *s);
 void vga_newline(void);
 void vga_clear_line(size_t line);
-void vga_scroll(size_t lines);
+void vga_scroll(void);
 
 // TODO: implement printf
+void vga_putchar(char c);
 void vga_print(const char *s);
 void vga_println(const char *s);
 

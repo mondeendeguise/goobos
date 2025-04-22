@@ -1,7 +1,7 @@
 #include <goobos/types.h>
 #include <goobos/stddef.h>
 #include <goobos/string.h>
-#include <vga.h>
+#include <video/vga.h>
 
 VGA_Color_Code vga_color_code(enum VGA_Color fg, enum VGA_Color bg)
 {
@@ -38,26 +38,23 @@ void vga_clear_line(size_t line)
     }
 }
 
-void vga_scroll(size_t lines)
+void vga_scroll(void)
 {
-    for(size_t i = 0; i < lines; ++i)
+    for(size_t row = 1; row < VGA_BUFFER_HEIGHT; ++row)
     {
-        for(size_t row = 1; row < VGA_BUFFER_HEIGHT; ++row)
+        for(size_t col = 0; col < VGA_BUFFER_WIDTH; ++col)
         {
-            for(size_t col = 0; col < VGA_BUFFER_WIDTH; ++col)
-            {
-                struct VGA_Screen_Char character = writer.buffer[(row * VGA_BUFFER_WIDTH) + col];
-                writer.buffer[((row - 1) * VGA_BUFFER_WIDTH) + col] = character;
-            }
+            struct VGA_Screen_Char character = writer.buffer[(row * VGA_BUFFER_WIDTH) + col];
+            writer.buffer[((row - 1) * VGA_BUFFER_WIDTH) + col] = character;
         }
-
-        vga_clear_line(VGA_BUFFER_HEIGHT - 1);
     }
+
+    vga_clear_line(VGA_BUFFER_HEIGHT - 1);
 }
 
 void vga_newline(void)
 {
-    vga_scroll(1);
+    vga_scroll();
     writer.cursor_pos = 0;
 
     /*size_t line = writer.cursor_pos / VGA_BUFFER_WIDTH + 1;*/
@@ -71,6 +68,8 @@ void vga_write_byte(u8 c)
         vga_newline();
         return;
     }
+
+    if(writer.cursor_pos >= VGA_BUFFER_WIDTH) vga_newline();
 
     size_t row = VGA_BUFFER_HEIGHT - 1;
 
@@ -90,6 +89,22 @@ void vga_write_string(const char *s)
             vga_write_byte(s[i]);
         }
         else vga_write_byte(INVALID_CHARACTER_SYMBOL);
+    }
+}
+
+void vga_putchar(char c)
+{
+    if(c >= ASCII_PRINTABLE_LOWER_BOUND && c <= ASCII_PRINTABLE_UPPER_BOUND)
+    {
+        vga_write_byte(c);
+    }
+    else if(c == '\n')
+    {
+        vga_newline();
+    }
+    else
+    {
+        vga_write_byte(INVALID_CHARACTER_SYMBOL);
     }
 }
 

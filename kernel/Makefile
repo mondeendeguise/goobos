@@ -23,8 +23,10 @@ KERNEL_OBJS := $(ARCH_DIR)/multiboot.o \
 				$(ARCH_DIR)/idt/idt_32.o \
 				$(ARCH_DIR)/idt/interrupts.o \
 				$(ARCH_DIR)/idt/isr.o \
-				$(ARCH_DIR)/vga.o \
+				$(ARCH_DIR)/goobos/sys/io.o \
 				goobos/string.o \
+				goobos/stdio.o \
+				$(SRC_DIR)/video/vga.o \
 				$(SRC_DIR)/kernel.o
 
 OBJS := $(ARCH_DIR)/crti.o \
