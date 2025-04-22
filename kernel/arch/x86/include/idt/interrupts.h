@@ -1,6 +1,8 @@
 #ifndef IDT_INTERRUPTS_H_
 #define IDT_INTERRUPTS_H_
 
+#include <goobos/types.h>
+
 enum Exception_Vector
 {
     EXCEPTION_VECTOR_DIVISION_ERROR = 0x0,
@@ -30,8 +32,8 @@ enum Exception_Vector
     EXCEPTION_VECTOR_MAX,
 };
 
-extern const char *exception_vector_strings[];
+const char *exception_vector_to_string(enum Exception_Vector v);
 
-void interrupt_handler(void);
+void interrupt_handler(u32 vector);
 
 #endif // IDT_INTERRUPTS_H_

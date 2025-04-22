@@ -1,6 +1,6 @@
 #include <idt/interrupts.h>
+#include <goobos/stdio.h>
 #include <goobos/types.h>
-#include <vga.h>
 
 const char *exception_vector_strings[EXCEPTION_VECTOR_MAX] = {
     [EXCEPTION_VECTOR_DIVISION_ERROR] = "EXCEPTION_VECTOR_DIVISION_ERROR",
@@ -28,7 +28,45 @@ const char *exception_vector_strings[EXCEPTION_VECTOR_MAX] = {
     [EXCEPTION_VECTOR_SECURITY_EXCEPTION] = "EXCEPTION_VECTOR_SECURITY_EXCEPTION",
 };
 
-void interrupt_handler(void)
+const char *exception_vector_to_string(enum Exception_Vector v)
 {
-    vga_println("INTERRUPT");
+    return exception_vector_strings[v];
+}
+
+void interrupt_handler(u32 vector)
+{
+    switch(vector)
+    {
+    case EXCEPTION_VECTOR_DIVISION_ERROR: break;
+    case EXCEPTION_VECTOR_DEBUG: break;
+    case EXCEPTION_VECTOR_NON_MASKABLE_INTERRUPT: break;
+    case EXCEPTION_VECTOR_BREAKPOINT:
+        {
+            printf("%s\n", exception_vector_to_string(vector));
+        } break;
+    case EXCEPTION_VECTOR_OVERFLOW: break;
+    case EXCEPTION_VECTOR_BOUND_RANGE_EXCEEDED: break;
+    case EXCEPTION_VECTOR_INVALID_OPCODE: break;
+    case EXCEPTION_VECTOR_DEVICE_NOT_AVAILABLE: break;
+    case EXCEPTION_VECTOR_DOUBLE_FAULT: break;
+    case EXCEPTION_VECTOR_INVALID_TSS: break;
+    case EXCEPTION_VECTOR_SEGMENT_NOT_PRESENT: break;
+    case EXCEPTION_VECTOR_STACK_SEGMENT_FAULT: break;
+    case EXCEPTION_VECTOR_GENERAL_PROTECTION_FAULT: break;
+    case EXCEPTION_VECTOR_PAGE_FAULT: break;
+    case EXCEPTION_VECTOR_X87_FLOATING_POINT_EXCEPTION: break;
+    case EXCEPTION_VECTOR_ALIGNMENT_CHECK: break;
+    case EXCEPTION_VECTOR_MACHINE_CHECK: break;
+    case EXCEPTION_VECTOR_SIMD_FLOATING_POINT_EXCEPTION: break;
+    case EXCEPTION_VECTOR_VIRTUALIZATION_EXCEPTION: break;
+    case EXCEPTION_VECTOR_CONTROL_PROTECTION_EXCEPTION: break;
+    case EXCEPTION_VECTOR_HYPERVISOR_INJECTION_EXCEPTION: break;
+    case EXCEPTION_VECTOR_VMM_COMMUNICATOR_EXCEPTION: break;
+    case EXCEPTION_VECTOR_SECURITY_EXCEPTION: break;
+
+    default:
+        {
+            printf("UNHANDLED EXCEPTION: %u\n", vector);
+        } break;
+    }
 }

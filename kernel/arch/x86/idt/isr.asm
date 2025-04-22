@@ -5,17 +5,27 @@ section ".text"
 
 ISR_ERROR_CODE_NONE equ 0
 
+extrn interrupt_handler
+
 macro ISR_ERROR_STUB l
 {
     isr_stub_#l#:
-        call isr_wrapper
+        pushad
+        cld
+        push l
+        call interrupt_handler
+        popad
         iret
 }
     
 macro ISR_NO_ERROR_STUB l
 {
     isr_stub_#l#:
-        call isr_wrapper
+        pushad
+        cld
+        push l
+        call interrupt_handler
+        popad
         iret
 }
 
@@ -86,11 +96,3 @@ isr_stub_table:
     dd isr_stub_29
     dd isr_stub_30
     dd isr_stub_31
-
-extrn interrupt_handler
-isr_wrapper:
-    pushad
-    cld
-    call interrupt_handler
-    popad
-    iret
