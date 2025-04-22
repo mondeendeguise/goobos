@@ -1,7 +1,7 @@
 include toolchain.mk
 
 ARCH ?= x86_64
-VERSION := 2025.03.29
+VERSION := 2025.04.22
 
 SYSROOT := $(abspath ./sysroot)
 ISO_DIR := $(abspath ./isodir)
